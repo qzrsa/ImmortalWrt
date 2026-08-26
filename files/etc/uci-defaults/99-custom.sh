@@ -216,4 +216,22 @@ else
     echo "未检测到 Docker，跳过防火墙配置。"
 fi
 
+# 设置自定义管理界面默认背景图
+# argon 主题从 /www/luci-static/argon/background/ 随机选图作为登录背景
+# 清除自带默认背景，只保留我们的 bg1.jpg，确保每次都显示这张
+BG_DIR="/www/luci-static/argon/background"
+if [ -d "$BG_DIR" ]; then
+    for f in "$BG_DIR"/*.{jpg,png,gif,webp,mp4,webm}; do
+        [ -e "$f" ] || continue
+        _bgname=$(basename "$f")
+        if [ "$_bgname" != "bg1.jpg" ]; then
+            rm -f "$f"
+            echo "Removed default background: $_bgname" >>$LOGFILE
+        fi
+    done
+    echo "Custom background bg1.jpg set as default (only image in $BG_DIR)" >>$LOGFILE
+else
+    echo "Background directory not found: $BG_DIR" >>$LOGFILE
+fi
+
 exit 0
